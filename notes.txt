@@ -1,0 +1,4 @@
+1. set up regular js (react??) and html
+2. yarn babel init
+3. babel presets?
+4. babel translate command running
