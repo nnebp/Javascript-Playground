@@ -7,7 +7,9 @@ console.log('running!');
 //JSX
 var title = {
   title: 'look im a title',
-  subTitle: 'subtitle over here'
+  subTitle: 'subtitle over here',
+  //options: ['one', 'two']
+  options: []
 };
 
 var template = React.createElement(
@@ -21,7 +23,7 @@ var template = React.createElement(
   React.createElement(
     'h2',
     null,
-    title.subTitle
+    true && title.subTitle
   ),
   React.createElement(
     'p',
@@ -36,7 +38,7 @@ var template = React.createElement(
   React.createElement(
     'p',
     null,
-    'JSX text isssssssss7777777777sst'
+    title.options.length > 0 ? 'some options' : 'no options'
   )
 );
 
