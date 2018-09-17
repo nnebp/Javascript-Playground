@@ -1,0 +1,9 @@
+   change directory:
+     $ cd express-locallibrary-tutorial
+
+   install dependencies:
+     $ npm install
+
+   run the app:
+     $ DEBUG=express-locallibrary-tutorial:* npm start
+

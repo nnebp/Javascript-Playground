@@ -1,0 +1,16 @@
+DATABASE:
+	if there is time: remove dups so keys can be set up (that way you cant
+	insert a role for a movie that you do not have)
+
+APP:
+	setup hello world
+	test db connections
+	create and test routes
+	create/test unit tests
+
+APP design ideas:
+	controler (view?) models
+	models: movie, role, (actor?)
+		idempotent adding of movies and roles?
+	helpers: any model code that is used more than once
+
