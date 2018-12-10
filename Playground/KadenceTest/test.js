@@ -11,6 +11,17 @@ const leveldown = require('leveldown');
 const encoding = require('encoding-down');
 const kadence = require('@kadenceproject/kadence');
 
+// Command line args
+const listenPort = process.argv[2];
+const joinID = process.argv[3];
+const joinIP = process.argv[4];
+const joinPort= process.argv[5];
+//TODO if argv.length < blah blah
+
+// In production, persist identity to disk and load it
+// Generating a new one every time will cause lookup problems
+const identity = kadence.utils.getRandomKeyBuffer();
+
 // Construct a kademlia node interface; the returned `KademliaNode` object
 // exposes:
 // - router
@@ -19,28 +30,33 @@ const kadence = require('@kadenceproject/kadence');
 // - identity
 const node = new kadence.KademliaNode({
   transport: new kadence.HTTPTransport(),
-  storage: levelup(encoding(leveldown('path/to/storage.db'))),
-  contact: { hostname: 'localhost', port: 1337 }
+  storage: levelup(encoding(leveldown(`./storage${listenPort}.db`))),
+  contact: { hostname: 'localhost', port: listenPort}
 });
 
 // When you are ready, start listening for messages and join the network
 // The Node#listen method takes different arguments based on the transport
 // adapter being used
-node.listen(1337);
+node.listen(listenPort);
 
 // Join a known peer by it's [identity, contact]
-node.join(['ea48d3f07a5241291ed0b4cab6483fa8b8fcc127', {
-  hostname: 'localhost',
-  port: 8080
-}], () => {
-  // Add 'join' callback which indicates peers were discovered and
-  // our node is now connected to the overlay network
-  node.logger.info(`Connected to ${node.router.size} peers!`)
+//if (joinNode !== undefined) { //TODO we still have to join?
+if (true) { //TODO we still have to join?
+  node.join([joinID, { //is this running by default??
 
-  // Base protocol exposes:
-  // * node.iterativeFindNode(key, callback)
-  // * node.iterativeFindValue(key, callback)
-  // * node.iterativeStore(key, value, callback)
-});
+    hostname: joinIP,
+    port: joinPort
+  }], () => {
+    // Add 'join' callback which indicates peers were discovered and
+    // our node is now connected to the overlay network
+    node.logger.info(`Connected to ${node.router.size} peers!`)
+    console.log(identity.valueOf());
+
+    // Base protocol exposes:
+    // * node.iterativeFindNode(key, callback)
+    // * node.iterativeFindValue(key, callback)
+    // * node.iterativeStore(key, value, callback)
+  });
+}
 
 
