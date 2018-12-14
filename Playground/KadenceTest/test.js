@@ -21,6 +21,9 @@ const joinPort= process.argv[5];
 
 const receivedFloodMessages = [];
 
+//create map and fill it with functions (message(key), function (value) TODO
+const messages = new Map();
+
 // In production, persist identity to disk and load it
 // Generating a new one every time will cause lookup problems
 const identity = kadence.utils.getRandomKeyBuffer();
@@ -36,6 +39,9 @@ const node = new kadence.KademliaNode({
   storage: levelup(encoding(leveldown(`./storage${listenPort}.db`))),
   contact: { hostname: 'localhost', port: listenPort}
 });
+
+// TODO do we need to join if we are the first node? it seems kadence is cool
+// wih us just connecting to a nonexistent node
 
 // When you are ready, start listening for messages and join the network
 // The Node#listen method takes different arguments based on the transport
@@ -57,14 +63,16 @@ node.join([joinID, { // does this even matter on the same machine?
   // * node.iterativeFindNode(key, callback)
   // * node.iterativeFindValue(key, callback)
   // * node.iterativeStore(key, value, callback)
+  flood("test", uuid()); //TODO split join uuid??
 
 });
 
 // Use "userland" (that's you!) rules to create your own protocols
 node.use('FLOOD', (request, response, next) => {
   if (receivedFloodMessages.indexOf(request.params.id) === -1) {
-    //TODO send the message on
-    console.log(request.params.message + " <-- did you also see this one?");
+    message.get(request.params.message)(request);
+    //console.log("the funct is" + funct);
+    //funct(request);
 
     flood(request.params.message, request.params.id);
     receivedFloodMessages.push(request.params.id);
@@ -76,12 +84,21 @@ const flood = (message, id) => {
   for(let value of node.router.values()) {
     if (value.size > 0) {
       for(let identValue of value) {
-        //console.log(identValue);
-        //TODO send real message
-        node.send('FLOOD', {message: message, id: id}, identValue);
+        //change args to be some object? TODO
+        node.send('FLOOD', {message: message, /*args: null,*/ id: id}, identValue);
       }
     }
  }
 };
 
-flood("333333dd333333", uuid());
+//TODO process messages take a map and a callback?
+// TODO change name
+const testMe = (request) => {
+  console.log(request.params.message + " <-- did the test function fire?");
+  //console.log("delte me " + " <-- did the test function fire?");
+};
+messages.set("test", testMe);
+
+flood("test", uuid()); //TODO split join uuid??
+console.log("flood???");
+//messages.get("test")(null);
