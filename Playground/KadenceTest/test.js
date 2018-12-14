@@ -63,19 +63,24 @@ node.join([joinID, { // does this even matter on the same machine?
   // * node.iterativeFindNode(key, callback)
   // * node.iterativeFindValue(key, callback)
   // * node.iterativeStore(key, value, callback)
-  flood("test", uuid()); //TODO split join uuid??
+
+  //add methods to map of messages to methods
+  messages.set("test", testMe);
+  // dont run on our node
+  const id = uuid();
+  receivedFloodMessages.push(id);
+  flood("test", id); //TODO split join uuid??
 
 });
 
 // Use "userland" (that's you!) rules to create your own protocols
 node.use('FLOOD', (request, response, next) => {
   if (receivedFloodMessages.indexOf(request.params.id) === -1) {
-    message.get(request.params.message)(request);
-    //console.log("the funct is" + funct);
-    //funct(request);
+    // call flooded method
+    messages.get(request.params.message)(request);
 
-    flood(request.params.message, request.params.id);
     receivedFloodMessages.push(request.params.id);
+    flood(request.params.message, request.params.id);
   }
 });
 
@@ -95,10 +100,5 @@ const flood = (message, id) => {
 // TODO change name
 const testMe = (request) => {
   console.log(request.params.message + " <-- did the test function fire?");
-  //console.log("delte me " + " <-- did the test function fire?");
+  console.log("delte me " + " <-- did the test function fire?");
 };
-messages.set("test", testMe);
-
-flood("test", uuid()); //TODO split join uuid??
-console.log("flood???");
-//messages.get("test")(null);
